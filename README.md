@@ -43,8 +43,8 @@ Create a file named **`.env`** inside the `server` folder (same level as `server
 Add at least these variables (replace placeholders with your real values):
 
 ```env
-# Database – required
-MONGODB_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/movie_booking?retryWrites=true&w=majority&appName=YOUR_APP_NAME
+# Database – required (get from Atlas: Connect → Drivers → copy connection string)
+MONGODB_URI=<paste your Atlas connection string here, including /movie_booking before ?retryWrites=...>
 
 # Auth (Clerk) – required for login/admin
 CLERK_PUBLISHABLE_KEY=pk_test_...
