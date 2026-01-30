@@ -92,24 +92,11 @@ export const addShow = async (req, res) => {
   }
 };
 
-// ✅ Get all shows (upcoming unique movies)
+// ✅ Get all movies from MongoDB (no seed needed – uses whatever is in Atlas)
 export const getShows = async (req, res) => {
   try {
-    const shows = await Show.find({ showDateTime: { $gte: new Date() } })
-      .populate("movie")
-      .sort({ showDateTime: 1 });
-
-    // Collect unique movies from shows
-    const uniqueMoviesMap = new Map();
-    shows.forEach((show) => {
-      if (show.movie && !uniqueMoviesMap.has(show.movie._id.toString())) {
-        uniqueMoviesMap.set(show.movie._id.toString(), show.movie);
-      }
-    });
-
-    const uniqueMovies = Array.from(uniqueMoviesMap.values());
-
-    res.json({ success: true, shows: uniqueMovies });
+    const movies = await Movie.find({}).sort({ title: 1 });
+    res.json({ success: true, shows: movies });
   } catch (error) {
     console.error("❌ Error fetching shows:", error);
     res.json({ success: false, message: error.message });

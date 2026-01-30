@@ -1,0 +1,21 @@
+# Environment variables (never commit secrets)
+.env
+.env.local
+.env.*.local
+client/.env
+server/.env
+
+# Dependencies
+node_modules
+
+# Build / cache
+dist
+dist-ssr
+*.local
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*

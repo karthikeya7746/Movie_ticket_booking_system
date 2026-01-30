@@ -22,7 +22,12 @@ app.use("/api/stripe", express.raw({ type: "application/json" }), stripeWebhooks
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" }));  // ✅ allow frontend
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://movie-ticket-booking-system-sable.vercel.app",
+  ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",").filter(Boolean) : []),
+];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 
 // Routes
