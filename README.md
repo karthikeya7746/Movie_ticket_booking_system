@@ -2,7 +2,7 @@
 
 A full-stack web app for browsing movies, viewing showtimes, and booking seats. It uses **React (Vite)** for the frontend, **Express.js** for the backend, **MongoDB Atlas** for data, **Clerk** for auth, and **Stripe** for payments.
 
-**Live demo:** [movie-ticket-booking-system-sable.vercel.app](https://movie-ticket-booking-system-erib.vercel.app )
+**Live demo:** [movie-ticket-booking-system-sable.vercel.app](https://movie-ticket-booking-system-erib.vercel.app)
 
 ---
 
