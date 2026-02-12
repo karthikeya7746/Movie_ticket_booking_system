@@ -1,4 +1,4 @@
-# Movie Ticket Booking System (QuickShow / Kar's Movies)
+# Movie Ticket Booking System (Kar's Movies)
 
 A full-stack web app for browsing movies, viewing showtimes, and booking seats. It uses **React (Vite)** for the frontend, **Express.js** for the backend, **MongoDB Atlas** for data, **Clerk** for auth, and **Stripe** for payments.
 
