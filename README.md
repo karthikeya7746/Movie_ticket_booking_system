@@ -225,6 +225,37 @@ Short version:
 
 ---
 
+## Showtimes permanent (fix “disappearing after 5 days”)
+
+**Why they disappear:** The app only shows showtimes in the **future**. Seed/update sets them to the next 5 days; after 5 days those dates are in the past, so no slots appear. **Movies** stay in the DB; it’s the **showtimes** that need to be rolled forward.
+
+To keep **showtimes** (bookable slots) available forever, call the backend once per day so it rolls all shows to the next 5 days.
+
+### 1. Add a secret on the backend
+
+- **Vercel** → your **backend** project → **Settings** → **Environment Variables**.
+- Add: **Key** `CRON_SECRET`, **Value** a long random string (e.g. generate one at [randomkeygen.com](https://randomkeygen.com)).
+- **Redeploy** the backend.
+
+### 2. Call the cron URL every day
+
+Your backend exposes:
+
+`https://YOUR-BACKEND-URL.vercel.app/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET`
+
+**Option A – Free cron service (e.g. cron-job.org)**  
+1. Go to [cron-job.org](https://cron-job.org) (or similar) and create a free account.  
+2. Create a new cron job:  
+   - **URL:** `https://movie-ticket-booking-system-gules.vercel.app/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET` (replace with your backend URL and real secret).  
+   - **Schedule:** every day, e.g. 3:00 AM.  
+3. Save. The site will call your backend daily; showtimes will stay in the “next 5 days” and never run out.
+
+**Option B – Run manually**  
+When showtimes are about to run out, open this URL in your browser (with your real secret):  
+`https://YOUR-BACKEND-URL/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET`
+
+---
+
 ## Troubleshooting
 
 | Issue | What to check |

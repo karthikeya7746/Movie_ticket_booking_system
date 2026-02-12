@@ -96,10 +96,10 @@ export const addShow = async (req, res) => {
 export const getShows = async (req, res) => {
   try {
     const movies = await Movie.find({}).sort({ title: 1 });
-    res.json({ success: true, shows: movies });
+    return res.json({ success: true, shows: movies });
   } catch (error) {
     console.error("❌ Error fetching shows:", error);
-    res.json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message || "Failed to load movies" });
   }
 };
 
