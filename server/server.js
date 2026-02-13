@@ -38,7 +38,18 @@ app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 // Routes that must be defined BEFORE /api ensureConnected (so they always work on Vercel)
 app.get("/", (req, res) => res.send("Server is Live!"));
 
-// Cron: catch by substring so we match no matter how Vercel sends the path (path / url / originalUrl)
+// Cron – SHORT path (use this if /api/cron/roll-show-dates returns 404 on Vercel)
+// URL: /api/cron?action=roll-show-dates&secret=YOUR_CRON_SECRET
+app.get("/api/cron", (req, res) => {
+  if (req.query.action !== "roll-show-dates") {
+    return res.status(400).json({ success: false, message: "Use ?action=roll-show-dates&secret=YOUR_CRON_SECRET" });
+  }
+  ensureConnected()
+    .then(() => rollShowDates(req, res))
+    .catch((err) => res.status(503).json({ success: false, message: "Database unavailable" }));
+});
+
+// Cron: long path + catch by substring (path / url / originalUrl)
 const handleCronIfMatch = (req, res, next) => {
   const pathOrUrl = (req.originalUrl || req.url || req.path || "").split("?")[0];
   if (req.method === "GET" && pathOrUrl.includes("roll-show-dates")) {
