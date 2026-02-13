@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI is not set in environment");
+    return Promise.reject(new Error("MONGODB_URI is not set in environment"));
   }
   try {
     mongoose.connection.on("connected", () => console.log("Database connected"));
