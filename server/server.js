@@ -15,8 +15,8 @@ import { rollShowDates } from "./controllers/cronController.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Connect DB
-await connectDB();
+// Start DB connection without blocking (so Vercel serverless can load the app; ensureConnected() waits per-request)
+connectDB().catch((err) => console.error("DB connect error:", err.message));
 
 // Stripe Webhooks Route (must come before express.json)
 app.use("/api/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
@@ -44,9 +44,21 @@ const isCronUrl = (req) => {
   const normalized = raw.startsWith("/") ? raw : `/${raw}`;
   return normalized === "/api/cron/roll-show-dates";
 };
-app.get("/api/cron/roll-show-dates", rollShowDates);
+app.get("/api/cron/roll-show-dates", async (req, res, next) => {
+  try {
+    await ensureConnected();
+    return rollShowDates(req, res);
+  } catch (err) {
+    res.status(503).json({ success: false, message: "Database unavailable" });
+  }
+});
 app.use((req, res, next) => {
-  if (isCronUrl(req)) return rollShowDates(req, res);
+  if (isCronUrl(req)) {
+    ensureConnected()
+      .then(() => rollShowDates(req, res))
+      .catch((err) => res.status(503).json({ success: false, message: "Database unavailable" }));
+    return;
+  }
   next();
 });
 
