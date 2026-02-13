@@ -38,15 +38,18 @@ app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 // Routes that must be defined BEFORE /api ensureConnected (so they always work on Vercel)
 app.get("/", (req, res) => res.send("Server is Live!"));
 
-// Cron – SHORT path (use this if /api/cron/roll-show-dates returns 404 on Vercel)
-// URL: /api/cron?action=roll-show-dates&secret=YOUR_CRON_SECRET
-app.get("/api/cron", (req, res) => {
-  if (req.query.action !== "roll-show-dates") {
-    return res.status(400).json({ success: false, message: "Use ?action=roll-show-dates&secret=YOUR_CRON_SECRET" });
+// Cron – SHORT path: /api/cron?action=roll-show-dates&secret=YOUR_CRON_SECRET
+app.get("/api/cron", async (req, res) => {
+  try {
+    if (req.query.action !== "roll-show-dates") {
+      return res.status(400).json({ success: false, message: "Use ?action=roll-show-dates&secret=YOUR_CRON_SECRET" });
+    }
+    await ensureConnected();
+    await rollShowDates(req, res);
+  } catch (err) {
+    console.error("Cron error:", err);
+    if (!res.headersSent) res.status(500).json({ success: false, message: err.message || "Cron failed" });
   }
-  ensureConnected()
-    .then(() => rollShowDates(req, res))
-    .catch((err) => res.status(503).json({ success: false, message: "Database unavailable" }));
 });
 
 // Cron: long path + catch by substring (path / url / originalUrl)
