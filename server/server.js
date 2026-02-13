@@ -29,6 +29,7 @@ const allowedOrigins = [
   "http://localhost:5176",
   "https://movie-ticket-booking-system-sable.vercel.app",
   "https://movie-ticket-booking-system-erib.vercel.app",
+  "https://movie-ticket-booking-system-wasw.vercel.app",
   ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",").filter(Boolean) : []),
 ];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
