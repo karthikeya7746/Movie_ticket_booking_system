@@ -10,7 +10,6 @@ import bookingRouter from "./routes/bookingRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import { stripeWebhooks } from "./controllers/stripeWebhooks.js";
-import { rollShowDates } from "./controllers/cronController.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,43 +34,8 @@ const allowedOrigins = [
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 
-// Routes that must be defined BEFORE /api ensureConnected (so they always work on Vercel)
+// Routes
 app.get("/", (req, res) => res.send("Server is Live!"));
-
-// Cron – SHORT path: /api/cron?action=roll-show-dates&secret=YOUR_CRON_SECRET
-app.get("/api/cron", async (req, res) => {
-  try {
-    if (req.query.action !== "roll-show-dates") {
-      return res.status(400).json({ success: false, message: "Use ?action=roll-show-dates&secret=YOUR_CRON_SECRET" });
-    }
-    await ensureConnected();
-    await rollShowDates(req, res);
-  } catch (err) {
-    console.error("Cron error:", err);
-    if (!res.headersSent) res.status(500).json({ success: false, message: err.message || "Cron failed" });
-  }
-});
-
-// Cron: long path + catch by substring (path / url / originalUrl)
-const handleCronIfMatch = (req, res, next) => {
-  const pathOrUrl = (req.originalUrl || req.url || req.path || "").split("?")[0];
-  if (req.method === "GET" && pathOrUrl.includes("roll-show-dates")) {
-    ensureConnected()
-      .then(() => rollShowDates(req, res))
-      .catch((err) => res.status(503).json({ success: false, message: "Database unavailable" }));
-    return;
-  }
-  next();
-};
-app.use(handleCronIfMatch);
-app.get("/api/cron/roll-show-dates", async (req, res, next) => {
-  try {
-    await ensureConnected();
-    return rollShowDates(req, res);
-  } catch (err) {
-    res.status(503).json({ success: false, message: "Database unavailable" });
-  }
-});
 
 // Ensure MongoDB is connected before other API handlers (avoids buffering timeouts on serverless)
 app.use("/api", async (req, res, next) => {
@@ -100,16 +64,6 @@ app.use("/api/user", userRouter);
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ success: false, message: err.message || "Server error" });
-});
-
-// 404: so we can see what path Express received (if 404 is from our app)
-app.use((req, res) => {
-  res.status(404).json({
-    message: "Not found",
-    path: req.path,
-    url: req.url,
-    originalUrl: req.originalUrl,
-  });
 });
 
 // For Vercel serverless: export the app so the platform can invoke it

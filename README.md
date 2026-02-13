@@ -95,7 +95,7 @@ Leave this terminal open. The API runs at **http://localhost:3000**.
     ```bash
     npm run update-shows
     ```
-    This sets all existing shows to the next 5 days (4 times per day: 10:00, 13:00, 16:00, 19:00).  
+    This sets all existing shows to the next 14 days (4 times per day: 10:00, 13:00, 16:00, 19:00).  
   - Or run the full seed (replaces movies and shows with seed data):
     ```bash
     npm run seed
@@ -192,8 +192,8 @@ Movie_ticket_booking_system/
 |----------|---------|-------------|
 | `server` | `npm run server` | Start API with nodemon (auto-restart on file change) |
 | `server` | `npm start` | Start API with node |
-| `server` | `npm run seed` | Seed DB with movies and shows (next 5 days) |
-| `server` | `npm run update-shows` | Move existing shows to upcoming dates (next 5 days) |
+| `server` | `npm run seed` | Seed DB with movies and shows (next 14 days) |
+| `server` | `npm run update-shows` | Move existing shows to upcoming dates (next 14 days) |
 | `client` | `npm run dev` | Start Vite dev server |
 | `client` | `npm run build` | Production build for deployment |
 
@@ -225,34 +225,9 @@ Short version:
 
 ---
 
-## Showtimes permanent (fix “disappearing after 5 days”)
+## Showtimes (14 days)
 
-**Why they disappear:** The app only shows showtimes in the **future**. Seed/update sets them to the next 5 days; after 5 days those dates are in the past, so no slots appear. **Movies** stay in the DB; it’s the **showtimes** that need to be rolled forward.
-
-To keep **showtimes** (bookable slots) available forever, call the backend once per day so it rolls all shows to the next 5 days.
-
-### 1. Add a secret on the backend
-
-- **Vercel** → your **backend** project → **Settings** → **Environment Variables**.
-- Add: **Key** `CRON_SECRET`, **Value** a long random string (e.g. generate one at [randomkeygen.com](https://randomkeygen.com)).
-- **Redeploy** the backend.
-
-### 2. Call the cron URL every day
-
-Your backend exposes:
-
-`https://YOUR-BACKEND-URL.vercel.app/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET`
-
-**Option A – Free cron service (e.g. cron-job.org)**  
-1. Go to [cron-job.org](https://cron-job.org) (or similar) and create a free account.  
-2. Create a new cron job:  
-   - **URL:** `https://movie-ticket-booking-system-gules.vercel.app/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET` (replace with your backend URL and real secret).  
-   - **Schedule:** every day, e.g. 3:00 AM.  
-3. Save. The site will call your backend daily; showtimes will stay in the “next 5 days” and never run out.
-
-**Option B – Run manually**  
-When showtimes are about to run out, open this URL in your browser (with your real secret):  
-`https://YOUR-BACKEND-URL/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET`
+Seed and `update-shows` create showtimes for the **next 14 days**. After 14 days, run `npm run update-shows` again in the `server` folder (with `MONGODB_URI` pointing to your DB) to move shows to the next 14 days.
 
 ---
 

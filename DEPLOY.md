@@ -132,7 +132,7 @@ Use the database name **`movie_booking`** (add it before `?` if not there).
   ```bash
   npm run update-shows
   ```
-  This updates all shows to the next 5 days. Your **deployed** backend will then serve them.
+  This updates all shows to the next 14 days. Your **deployed** backend will then serve them.
 
 - **Option B – Empty or no shows:**  
   With the same `server/.env` and `MONGODB_URI`:
@@ -143,26 +143,7 @@ Use the database name **`movie_booking`** (add it before `?` if not there).
 
 ---
 
-## Keep showtimes permanent (no disappearing after 5 days)
-
-**Why they disappear:** The app only shows showtimes whose date/time is in the **future**. Your seed/update sets them to the “next 5 days”. After 5 days, those dates are in the past, so no showtimes appear (movies stay; only bookable slots vanish).
-
-**Fix – run a daily cron** that “rolls” show dates to the next 5 days so they never run out:
-
-1. **Backend env on Vercel**  
-   In your **backend** project → **Settings** → **Environment Variables** add:
-   - **Name:** `CRON_SECRET`
-   - **Value:** a long random string (e.g. generate one at [randomkeygen.com](https://randomkeygen.com)). Keep this secret.  
-   Redeploy the backend.
-
-2. **Call the cron endpoint every day**  
-   Use a free cron service (e.g. [cron-job.org](https://cron-job.org)) so it hits your backend once per day:
-   - **URL:** `https://YOUR-BACKEND-URL.vercel.app/api/cron/roll-show-dates?secret=YOUR_CRON_SECRET`  
-     (replace `YOUR-BACKEND-URL` and `YOUR_CRON_SECRET` with your real values).
-   - **Schedule:** daily (e.g. every day at 00:05 or 01:00).
-   - Save the cron job.
-
-After this, showtimes will be moved to the next 5 days every day, so they stay visible and bookable. **Movies** are already stored permanently in the `movies` collection and do not expire.
+**Showtimes:** Seed and `update-shows` use the **next 14 days**. When they run out, run `npm run update-shows` again locally (with the same `MONGODB_URI` as production).
 
 ---
 

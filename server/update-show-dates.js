@@ -1,6 +1,6 @@
 /**
  * Makes all existing shows "upcoming" by setting their showDateTime
- * to the next 5 days (4 times per day: 10:00, 13:00, 16:00, 19:00).
+ * to the next 14 days (4 times per day: 10:00, 13:00, 16:00, 19:00).
  * Run from server folder: node update-show-dates.js
  */
 import mongoose from "mongoose";
@@ -26,7 +26,7 @@ const updateShowDates = async () => {
 
     const today = new Date();
     const slotsPerDay = timings.length; // 4
-    const days = 5;
+    const days = 14;
 
     // Group shows by movie
     const byMovie = {};

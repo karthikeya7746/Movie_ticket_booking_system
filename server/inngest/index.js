@@ -217,49 +217,6 @@ const sendNewShowNotifications = inngest.createFunction(
 )
 
 
-// Inngest Function to keep showtimes "forever" – runs daily and moves past shows to the next 5 days
-const TIMINGS = ["10:00", "13:00", "16:00", "19:00"];
-const SLOTS_PER_DAY = TIMINGS.length;
-const DAYS_AHEAD = 5;
-
-const rollShowDatesToFuture = inngest.createFunction(
-    { id: "roll-show-dates-to-future" },
-    { cron: "0 3 * * *" }, // Every day at 3:00 AM
-    async ({ step }) => {
-        const result = await step.run("update-past-shows-to-future", async () => {
-            const shows = await Show.find({}).sort({ movie: 1, showDateTime: 1 });
-            if (shows.length === 0) return { updated: 0, message: "No shows found." };
-
-            const today = new Date();
-            const byMovie = {};
-            for (const show of shows) {
-                const id = show.movie.toString();
-                if (!byMovie[id]) byMovie[id] = [];
-                byMovie[id].push(show);
-            }
-
-            let updated = 0;
-            for (const movieId of Object.keys(byMovie)) {
-                const movieShows = byMovie[movieId];
-                for (let i = 0; i < movieShows.length; i++) {
-                    const dayOffset = Math.floor(i / SLOTS_PER_DAY) % DAYS_AHEAD;
-                    const timeIndex = i % SLOTS_PER_DAY;
-                    const [hours, minutes] = TIMINGS[timeIndex].split(":").map(Number);
-
-                    const newDate = new Date(today);
-                    newDate.setDate(today.getDate() + dayOffset);
-                    newDate.setHours(hours, minutes, 0, 0);
-
-                    await Show.findByIdAndUpdate(movieShows[i]._id, { showDateTime: newDate });
-                    updated++;
-                }
-            }
-            return { updated, message: `Updated ${updated} show(s) to next ${DAYS_AHEAD} days.` };
-        });
-        return result;
-    }
-);
-
 export const functions = [
     syncUserCreation,
     syncUserDeletion,
@@ -268,5 +225,4 @@ export const functions = [
     sendBookingConfirmationEmail,
     sendShowReminders,
     sendNewShowNotifications,
-    rollShowDatesToFuture
 ];
