@@ -1,11 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/cron/roll-show-dates.js", "use": "@vercel/node" },
     { "src": "server.js", "use": "@vercel/node", "config": { "includeFiles": ["dist/**"] } }
   ],
   "routes": [
-    { "src": "/api/cron/roll-show-dates", "dest": "/api/cron/roll-show-dates" },
     { "src": "/(.*)", "dest": "server.js" }
   ]
 }

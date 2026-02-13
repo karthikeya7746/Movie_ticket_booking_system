@@ -37,12 +37,16 @@ app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 
 // Routes that must be defined BEFORE /api ensureConnected (so they always work on Vercel)
 app.get("/", (req, res) => res.send("Server is Live!"));
-// Cron: match by path or by url (Vercel sometimes sends one or the other)
+// Cron: match every possible way Vercel might send the path (path, url, originalUrl, with/without leading slash)
+const isCronUrl = (req) => {
+  if (req.method !== "GET") return false;
+  const raw = (req.originalUrl || req.url || req.path || "").split("?")[0];
+  const normalized = raw.startsWith("/") ? raw : `/${raw}`;
+  return normalized === "/api/cron/roll-show-dates";
+};
 app.get("/api/cron/roll-show-dates", rollShowDates);
 app.use((req, res, next) => {
-  if (req.method === "GET" && req.originalUrl?.split("?")[0] === "/api/cron/roll-show-dates") {
-    return rollShowDates(req, res);
-  }
+  if (isCronUrl(req)) return rollShowDates(req, res);
   next();
 });
 
