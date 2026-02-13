@@ -88,25 +88,6 @@ const MovieDetails = () => {
           ))
         )}
       </div>
-
-      {/* Cast Section */}
-      <div className="px-10 my-10">
-        <h2 className="text-2xl font-semibold mb-4">Your Favorite Cast</h2>
-        <div className="flex gap-6 flex-wrap">
-          {movie.casts?.map((cast, idx) => (
-            <div key={idx} className="w-32 text-center">
-              <img
-                src={getImageUrl(cast.profile_path, image_base_url)}
-                alt={cast.name}
-                className="w-32 h-40 object-cover rounded-md mb-2"
-                onError={(e) => (e.target.src = "/coming-soon.jpg")}
-              />
-              <p className="text-sm font-medium">{cast.name}</p>
-              <p className="text-xs text-gray-400">{cast.character}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
