@@ -32,7 +32,18 @@ const allowedOrigins = [
   "https://movie-ticket-booking-system-wasw.vercel.app",
   ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",").filter(Boolean) : []),
 ];
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+// Allow any Vercel deployment URL for this project (e.g. ...-4fn0cqaux.vercel.app, ...-mrrktpall.vercel.app)
+const corsOptions = {
+  origin: (origin, cb) => {
+    const allowed = allowedOrigins.includes(origin);
+    const isVercelDeploy = origin && origin.endsWith(".vercel.app") && origin.includes("movie-ticket-booking-system");
+    if (allowed || isVercelDeploy) return cb(null, true);
+    cb(null, false);
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(clerkMiddleware());  // ✅ Clerk auth middleware
 
 // Routes
