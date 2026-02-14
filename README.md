@@ -2,7 +2,7 @@
 
 A full-stack web app for browsing movies, viewing showtimes, and booking seats. It uses **React (Vite)** for the frontend, **Express.js** for the backend, **MongoDB Atlas** for data, **Clerk** for auth, and **Stripe** for payments.
 
-**Live demo:** [Click here!](https://movie-ticket-booking-system-wasw.vercel.app)
+**Live demo:** [Frontend](https://movie-ticket-booking-system-wasw.vercel.app) · **Backend API:** `https://movie-ticket-booking-system-gules.vercel.app`
 
 ---
 
@@ -201,8 +201,6 @@ Movie_ticket_booking_system/
 
 ## Deployment (Vercel)
 
-**Full step-by-step from scratch:** see **[DEPLOY.md](./DEPLOY.md)** – prerequisites, backend deploy, frontend deploy, env vars, and checklist.
-
 Short version:
 
 1. **Deploy backend**  
@@ -212,7 +210,7 @@ Short version:
 
 2. **Deploy frontend**  
    - New Project → **Root Directory: `client`**.  
-   - Set `VITE_BASE_URL` to your **backend URL** (e.g. `https://your-api.vercel.app`).  
+   - Set `VITE_BASE_URL` to your **backend URL** (e.g. `https://movie-ticket-booking-system-gules.vercel.app`).  
    - Set `VITE_CLERK_PUBLISHABLE_KEY`.  
    - Deploy.
 
@@ -221,7 +219,7 @@ Short version:
    - For showtimes, run `npm run update-shows` or `npm run seed` once from your machine with `MONGODB_URI` set to that same Atlas DB.
 
 4. **Stripe**  
-   - In Stripe Dashboard, set the webhook URL to `https://your-backend-url.vercel.app/api/stripe`.
+   - In Stripe Dashboard, set the webhook URL to `https://movie-ticket-booking-system-gules.vercel.app/api/stripe`.
 
 ---
 
